@@ -2,7 +2,7 @@
 import dash
 import dash_html_components as html
 import dash_core_components as dcc
-from data.covid_get_raw_data import timeline_raw_data
+from dashapp.data.covid_get_raw_data import timeline_raw_data
 import plotly.graph_objects as go
 
 # Load data
