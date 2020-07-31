@@ -8,6 +8,13 @@ import dash_core_components as dcc
 from data.covid_get_raw_data import timeline_raw_data
 import plotly.graph_objects as go
 
+# Setup the app
+# Make sure not to change this file name or the variable names below,
+# the template is configured to execute 'server' on 'app.py'
+server = flask.Flask(__name__)
+server.secret_key = os.environ.get('secret_key', str(randint(0, 1000000)))
+app = dash.Dash(__name__, server=server)
+
 # Load data
 df_timeline = timeline_raw_data()
 
@@ -46,13 +53,6 @@ fig2.add_trace(go.Scatter(x=df_timeline['date'], y=df_timeline['new_confirmed'],
                     name='new confirmed'))
 
 fig2.update_layout(template="plotly_dark", title="New World Covid Cases", width=1060, height=400)
-
-# Setup the app
-# Make sure not to change this file name or the variable names below,
-# the template is configured to execute 'server' on 'app.py'
-server = flask.Flask(__name__)
-server.secret_key = os.environ.get('secret_key', str(randint(0, 1000000)))
-app = dash.Dash(__name__, server=server)
 
 # Responsive dashboards
 app = dash.Dash(
