@@ -9,7 +9,16 @@ from data.covid_get_raw_data import timeline_raw_data
 import plotly.graph_objects as go
 
 # Setup the app
-app = dash.Dash(__name__)
+#app = dash.Dash(__name__)
+
+
+# Responsive dashboards
+app = dash.Dash(
+    meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+    ]
+)
+
 server = app.server
 
 # Load data
@@ -50,13 +59,6 @@ fig2.add_trace(go.Scatter(x=df_timeline['date'], y=df_timeline['new_confirmed'],
                     name='new confirmed'))
 
 fig2.update_layout(template="plotly_dark", title="New World Covid Cases", width=1060, height=400)
-
-# Responsive dashboards
-#app = dash.Dash(
-#    meta_tags=[
-#        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
-#    ]
-#)
 
 # Define the app
 app.layout = html.Div(children=[
