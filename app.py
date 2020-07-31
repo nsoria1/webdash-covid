@@ -1,20 +1,16 @@
 # Import required libraries
 import os
-from random import randint
-import flask
+
 import dash
-from dash.dependencies import Input, Output, State
 import dash_html_components as html
-import dash_core_components as dcc
+import dash_core_components as dcc 
+
 from data.covid_get_raw_data import timeline_raw_data
 import plotly.graph_objects as go
 
 # Setup the app
-# Make sure not to change this file name or the variable names below,
-# the template is configured to execute 'server' on 'app.py'
-server = flask.Flask(__name__)
-server.secret_key = os.environ.get('secret_key', str(randint(0, 1000000)))
-app = dash.Dash(__name__, server=server)
+app = dash.Dash(__name__)
+server = app.server
 
 # Load data
 df_timeline = timeline_raw_data()
@@ -56,11 +52,11 @@ fig2.add_trace(go.Scatter(x=df_timeline['date'], y=df_timeline['new_confirmed'],
 fig2.update_layout(template="plotly_dark", title="New World Covid Cases", width=1060, height=400)
 
 # Responsive dashboards
-app = dash.Dash(
-    meta_tags=[
-        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
-    ]
-)
+#app = dash.Dash(
+#    meta_tags=[
+#        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+#    ]
+#)
 
 # Define the app
 app.layout = html.Div(children=[
@@ -82,4 +78,4 @@ app.layout = html.Div(children=[
 
 # Run the Dash app
 if __name__ == '__main__':
-    app.server.run(debug=True, threaded=True)
+    app.run_server(debug=True)
