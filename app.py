@@ -9,16 +9,7 @@ from data.covid_get_raw_data import timeline_raw_data
 import plotly.graph_objects as go
 
 # Setup the app
-#app = dash.Dash(__name__)
-
-
-# Responsive dashboards
-app = dash.Dash(
-    meta_tags=[
-        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
-    ]
-)
-
+app = dash.Dash(__name__)
 server = app.server
 
 # Load data
