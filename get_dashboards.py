@@ -66,12 +66,11 @@ def get_timeline_dash(df, menu):
 
 #--------------------------------------------------------------
 # Plot indicators
-def create_indicators(df, dropdown):
+def create_indicators(df, menu):
     fig = go.Figure()
-    loop = 0
 
     # Dictionary example to generate the indicators
-    if not dropdown:
+    if not menu or menu=='All countries':
         data = {
             'fig1': ['Critical Patients', 0],
             'fig2': ['Death Rate', 0],
@@ -79,7 +78,7 @@ def create_indicators(df, dropdown):
             'fig4': ['Cases per Million Population', 0]
             }
     else:
-        df2 = df[df['name']==dropdown]
+        df2 = df[df['name']==menu]
 
         df2 = df2.get(
             ['latest_data.critical',
@@ -97,18 +96,18 @@ def create_indicators(df, dropdown):
             inplace=True)
 
         data = {
-            'ind1': ['Critical Patients', df2['critical'].astype(int)],
-            'ind2': ['Death Rate', df2['death_rate'].astype(int)],
-            'ind3': ['Recovery Rate', df2['recovery_rate'].astype(int)],
-            'ind4': ['Cases per Million Population', df2['cases_per_million'].astype(int)]
+            'fig1': ['Critical Patients', df2['critical'].item()],
+            'fig2': ['Death Rate', df2['death_rate'].item()],
+            'fig3': ['Recovery Rate', df2['recovery_rate'].item()],
+            'fig4': ['Cases per Million Population', df2['cases_per_million'].item()]
             }
 
 
     domain_dict = {
-        0: {'x': [0, 0.5], 'y': [0, 0.20]},
-        1: {'x': [0, 0.5], 'y': [0.40, 0.60]},
-        2: {'x': [0.4, 0], 'y': [0, 0.20]},
-        3: {'x': [0.4, 0], 'y': [0.40, 0.60]}
+        'fig1': {'row': 1, 'column': 0},
+        'fig2': {'row': 0, 'column': 0},
+        'fig3': {'row': 1, 'column': 1},
+        'fig4': {'row': 0, 'column': 1}
         }
     
     for i in data:
@@ -116,8 +115,13 @@ def create_indicators(df, dropdown):
             mode = "gauge+number",
             value = data[i][1],
             title = {'text': data[i][0]},
-            domain = domain_dict[loop]
+            domain = domain_dict[i]
         ))
-        loop = loop + 1
-    
+        
+    fig.update_layout(
+        paper_bgcolor = "#121010", 
+        font = {'color': "white", 'family': "Arial"},
+        grid = {'rows': 2, 'columns': 2, 'pattern': "independent"}
+        )
+
     return(fig)

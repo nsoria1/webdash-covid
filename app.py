@@ -48,9 +48,8 @@ app.layout = html.Div(
                     html.Div(className='nine columns div-for-charts bg-grey',
                              children=[
                                  dcc.Graph(id='fig1', animate=True),
-                                 dcc.Graph(id='fig2', animate=True)
-                             ])#,
-                    #dcc.Graph(id='fig2', animate=True)
+                                 dcc.Graph(id='fig2', style={'height': 520, 'width': 700}, animate=True)
+                             ])
                     ])
                 ]
             )
