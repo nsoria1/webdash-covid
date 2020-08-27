@@ -1,8 +1,17 @@
 # Import required libraries
+import os
 import requests
 import pandas as pd
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
+
+#--------------------------------------------------------------
+
+# Change directory to data directory
+work_dir = os.getcwd()
+if not 'data' in work_dir.split("/"):
+    os.chdir('./data')
 
 #--------------------------------------------------------------
 
@@ -30,6 +39,21 @@ def timeline_raw_data():
     df_timeline['updated_at'] = df_timeline['updated_at'].astype('datetime64')
     df_timeline['date'] = df_timeline['date'].astype('datetime64')
 
+    # Create timestamp and name
+    timestamp = datetime.today().strftime('%Y_%m_%d')
+    name = 'df_timeline_{}.parquet.snappy'.format(timestamp)
+
+    # Delete previous file
+    for filename in os.listdir():
+        if 'df_timeline_' in filename:
+            os.remove(filename)
+
+    # Save data to parquet format
+    df_timeline.to_parquet(
+        name,
+        compression='snappy'
+    )
+
     # Return pandas data frame
     return df_timeline
 
@@ -48,6 +72,21 @@ def country_raw_data():
     df_country = df_country.join(pd.json_normalize(df_country["today"].tolist()).add_prefix("today.")).drop(["today"], axis=1)
     df_country = df_country.join(pd.json_normalize(df_country["latest_data"].tolist()).add_prefix("latest_data.")).drop(["latest_data"], axis=1)
     df_country = df_country.join(pd.json_normalize(df_country["coordinates"].tolist()).add_prefix("coordinates.")).drop(["coordinates"], axis=1)
+
+    # Create timestamp and name
+    timestamp = datetime.today().strftime('%Y_%m_%d')
+    name = 'df_country_{}.parquet.snappy'.format(timestamp)
+
+    # Delete previous file
+    for filename in os.listdir():
+        if 'df_country_20' in filename:
+            os.remove(filename)
+
+    # Save data to parquet format
+    df_country.to_parquet(
+        name,
+        compression='snappy'
+    )
 
     # Return pandas data frame
     return df_country
@@ -96,5 +135,36 @@ def country_timeline_raw_data():
     df_country = df_country.join(pd.json_normalize(df_country["coordinates"].tolist()).add_prefix("coordinates.")).drop(["coordinates"], axis=1)
     df_country['timeline.date']=pd.to_datetime(df_country['timeline.date'])
 
+    # Create timestamp and name
+    timestamp = datetime.today().strftime('%Y_%m_%d')
+    name = 'df_country_flatten_{}.parquet.snappy'.format(timestamp)
+
+    # Delete previous file
+    for filename in os.listdir():
+        if 'df_country_flatten' in filename:
+            os.remove(filename)
+
+    # Save data to parquet format
+    df_country.to_parquet(
+        name,
+        compression='snappy'
+    )
+
     # Return pandas data frame
     return df_country
+
+#--------------------------------------------------------------
+
+def get_country_prediction(id_country):
+    if not id_country:
+        return 0
+    else:
+        url = 'https://covid19-api.org/api/prediction/{}'.format(id_country)
+        url2 = 'https://covid19-api.org/api/status/{}'.format(id_country)
+        resp = requests.get(url)
+        resp2 = requests.get(url2)
+        data = resp.json()
+        data2 = resp2.json()
+        data = data[0]['cases']
+        data2 = data2['cases']
+        return  data - data2
